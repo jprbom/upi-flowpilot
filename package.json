@@ -1,0 +1,26 @@
+{
+  "name": "upi-flowpilot",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Prashant Jagtap <jprbom@gmail.com>",
+  "description": "Real-time UPI checkout reliability, flow selection, retry, and degradation intelligence for Bharat merchants.",
+  "type": "module",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "build": "npm --workspace backend run build && npm --workspace frontend run build",
+    "test": "npm --workspace backend run test && npm --workspace frontend run test",
+    "audit:high": "npm audit --audit-level=high",
+    "verify": "npm run build && npm run test && npm run audit:high"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.4.2"
+  }
+}

@@ -1,0 +1,5 @@
+id,merchantId,amount,payerBank,psp,flow,status,latencyMs,riskScore
+pay_001,kirana-mumbai-44,2450,HDFC Bank,PhonePe,UPI_INTENT,SUCCESS,1380,18
+pay_002,food-cart-pune-11,190,SBI,GPay,UPI_COLLECT,FAILED,8900,22
+pay_003,d2c-jaipur-88,8600,ICICI Bank,Paytm,UPI_QR,RETRIED,4100,31
+
