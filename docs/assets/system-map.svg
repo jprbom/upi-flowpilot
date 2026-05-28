@@ -1,43 +1,96 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="UPI FlowPilot unique system map">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 680" role="img" aria-label="Latest UPI payment ecosystem simulator architecture map">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f97316"/>
-      <stop offset="100%" stop-color="#06b6d4"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="0.48" stop-color="#eef6ff"/>
+      <stop offset="1" stop-color="#fff7ed"/>
     </linearGradient>
-    <filter id="shadow"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity=".18"/></filter>
+    <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="0.5" stop-color="#06b6d4"/>
+      <stop offset="1" stop-color="#16a34a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+    <style>
+      .title{font:800 34px Inter,Segoe UI,Arial,sans-serif;fill:#0f172a}
+      .sub{font:600 16px Inter,Segoe UI,Arial,sans-serif;fill:#475569}
+      .box{rx:18;filter:url(#shadow);stroke-width:1.4}
+      .head{font:800 18px Inter,Segoe UI,Arial,sans-serif;fill:#0f172a}
+      .body{font:600 13px Inter,Segoe UI,Arial,sans-serif;fill:#475569}
+      .pill{font:800 12px Inter,Segoe UI,Arial,sans-serif;fill:white}
+      .line{stroke:url(#rail);stroke-width:5;fill:none;stroke-linecap:round;stroke-dasharray:12 12}
+      .arrow{fill:#16a34a}
+    </style>
   </defs>
-  <rect width="1200" height="420" rx="28" fill="#f8fafc"/>
-  <path d="M0 70 C180 20 310 120 470 70 C670 8 780 120 960 68 C1070 36 1140 48 1200 70 L1200 0 L0 0 Z" fill="url(#g)" opacity=".18"/>
-  <text x="60" y="62" font-family="Inter, Segoe UI, Arial" font-size="34" font-weight="800" fill="#0f172a">UPI FlowPilot</text>
-  <text x="60" y="96" font-family="Inter, Segoe UI, Arial" font-size="17" fill="#475569">Real-time UPI checkout reliability and payment-flow recovery engine.</text>
-  <g filter="url(#shadow)">
-      <rect x="70" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
-      <circle cx="104" cy="184" r="14" fill="#f97316" opacity=".85"/>
-      <text x="128" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Overview</text>
-      <text x="94" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
-      <text x="94" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
-    </g><path d="M300 216 L335 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
-  <g filter="url(#shadow)">
-      <rect x="345" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
-      <circle cx="379" cy="184" r="14" fill="#f97316" opacity=".85"/>
-      <text x="403" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Flow Optimizer</text>
-      <text x="369" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
-      <text x="369" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
-    </g><path d="M575 216 L610 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
-  <g filter="url(#shadow)">
-      <rect x="620" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
-      <circle cx="654" cy="184" r="14" fill="#f97316" opacity=".85"/>
-      <text x="678" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Transactions</text>
-      <text x="644" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
-      <text x="644" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
-    </g><path d="M850 216 L885 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
-  <g filter="url(#shadow)">
-      <rect x="895" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
-      <circle cx="929" cy="184" r="14" fill="#f97316" opacity=".85"/>
-      <text x="953" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Reliability SRE</text>
-      <text x="919" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
-      <text x="919" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
-    </g>
-  <rect x="380" y="330" width="440" height="48" rx="24" fill="url(#g)"/>
-  <text x="438" y="361" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#ffffff">Mock NPCI/UPI Sandbox + Synthetic AI Model Layer</text>
+  <rect width="1320" height="680" fill="url(#bg)"/>
+  <circle cx="1120" cy="90" r="130" fill="#dbeafe" opacity="0.7"/>
+  <circle cx="180" cy="590" r="150" fill="#ffedd5" opacity="0.75"/>
+  <text x="58" y="70" class="title">Latest Architecture: Public-safe UPI Payment Ecosystem Simulator</text>
+  <text x="60" y="102" class="sub">Signed demo RBAC, five adapters, HMAC webhooks, lifecycle timeline, reconciliation, refunds, disputes, and synthetic AIML/DL governance.</text>
+
+  <rect x="60" y="150" width="210" height="122" fill="#ffffff" stroke="#bfdbfe" class="box"/>
+  <text x="86" y="190" class="head">React Console</text>
+  <text x="86" y="218" class="body">RBAC role selector</text>
+  <text x="86" y="240" class="body">Payment Ecosystem Timeline</text>
+
+  <rect x="330" y="150" width="210" height="122" fill="#ffffff" stroke="#c7d2fe" class="box"/>
+  <text x="356" y="190" class="head">Signed Demo Auth</text>
+  <text x="356" y="218" class="body">/api/auth/demo-token</text>
+  <text x="356" y="240" class="body">Forged role headers ignored</text>
+
+  <rect x="600" y="150" width="210" height="122" fill="#ffffff" stroke="#bae6fd" class="box"/>
+  <text x="626" y="190" class="head">Express API</text>
+  <text x="626" y="218" class="body">CRUD + domain decisioning</text>
+  <text x="626" y="240" class="body">Zod, Helmet, rate limits</text>
+
+  <rect x="870" y="150" width="210" height="122" fill="#ffffff" stroke="#bbf7d0" class="box"/>
+  <text x="896" y="190" class="head">Simulator Core</text>
+  <text x="896" y="218" class="body">Idempotency + state machine</text>
+  <text x="896" y="240" class="body">Scenario matrix</text>
+
+  <path d="M270 211 H330 M540 211 H600 M810 211 H870" class="line"/>
+
+  <rect x="90" y="350" width="184" height="104" fill="#eff6ff" stroke="#60a5fa" class="box"/>
+  <text x="116" y="386" class="head">PG Adapter</text>
+  <text x="116" y="414" class="body">Checkout session</text>
+  <text x="116" y="436" class="body">Redirect flow</text>
+
+  <rect x="320" y="350" width="184" height="104" fill="#ecfeff" stroke="#22d3ee" class="box"/>
+  <text x="346" y="386" class="head">PA Adapter</text>
+  <text x="346" y="414" class="body">Order + attempts</text>
+  <text x="346" y="436" class="body">Capture / failed retry</text>
+
+  <rect x="550" y="350" width="184" height="104" fill="#f0fdf4" stroke="#4ade80" class="box"/>
+  <text x="576" y="386" class="head">TPAP Adapter</text>
+  <text x="576" y="414" class="body">App switch + PIN</text>
+  <text x="576" y="436" class="body">Customer retry/drop</text>
+
+  <rect x="780" y="350" width="184" height="104" fill="#fefce8" stroke="#facc15" class="box"/>
+  <text x="806" y="386" class="head">PSP / Bank</text>
+  <text x="806" y="414" class="body">Health windows</text>
+  <text x="806" y="436" class="body">Timeout / decline</text>
+
+  <rect x="1010" y="350" width="220" height="104" fill="#fff7ed" stroke="#fb923c" class="box"/>
+  <text x="1036" y="386" class="head">NPCI-style Rail</text>
+  <text x="1036" y="414" class="body">Success / deemed / hold</text>
+  <text x="1036" y="436" class="body">No live NPCI API used</text>
+
+  <path d="M274 402 H320 M504 402 H550 M734 402 H780 M964 402 H1010" class="line"/>
+
+  <rect x="190" y="535" width="260" height="74" fill="#ffffff" stroke="#fed7aa" class="box"/>
+  <text x="218" y="566" class="head">HMAC Webhooks</text>
+  <text x="218" y="590" class="body">Duplicate + out-of-order handling</text>
+
+  <rect x="530" y="535" width="260" height="74" fill="#ffffff" stroke="#bbf7d0" class="box"/>
+  <text x="558" y="566" class="head">Reconciliation</text>
+  <text x="558" y="590" class="body">Settlement, refund, dispute batches</text>
+
+  <rect x="870" y="535" width="260" height="74" fill="#ffffff" stroke="#c4b5fd" class="box"/>
+  <text x="898" y="566" class="head">AIML/DL Governance</text>
+  <text x="898" y="590" class="body">10k synthetic rows + model card</text>
+
+  <rect x="60" y="292" width="1168" height="34" rx="17" fill="url(#rail)" opacity="0.95"/>
+  <text x="90" y="315" class="pill">Merchant -> PG -> PA -> TPAP -> PSP/Bank -> NPCI-style Rail -> Webhook -> Settlement -> Timeline</text>
 </svg>

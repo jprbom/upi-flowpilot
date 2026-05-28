@@ -1,5 +1,9 @@
 # Prototype Audit Response
 
+## Latest Audit Closure
+
+The latest implementation adds signed demo-token RBAC, a five-adapter payment ecosystem simulator, HMAC webhook signing, duplicate and out-of-order webhook handling, refund/dispute/reconciliation APIs, a frontend Payment Ecosystem Timeline, 10,000-row synthetic AIML/DL artifacts, and expanded enterprise documentation.
+
 ## Honest Status
 
 UPI FlowPilot is a runnable portfolio-grade prototype, not a production UPI platform. It demonstrates checkout reliability decisioning, synthetic CRUD workflows, RBAC simulation, a mocked UPI/NPCI response, tests, CI, Docker packaging, and SDLC documentation.
@@ -19,11 +23,11 @@ It should not be presented as: **a production-ready payment router or certified 
 
 ## Prototype Boundaries
 
-- RBAC is a simulator. It uses `x-user-role`; production would require OIDC/JWT, signed sessions, tenant isolation, KMS-backed secrets, and immutable audit logs.
+- RBAC remains a simulator, but it now uses signed local demo bearer tokens and ignores forged `x-user-role`; production would still require OIDC/JWT, signed sessions, tenant isolation, KMS-backed secrets, and immutable audit logs.
 - The decision engine is deterministic scoring, not a deployed ML model.
-- The ML script is educational and synthetic, not statistically valid payment model training.
+- The ML script now generates 10,000 synthetic rows with train/test metrics, confusion matrix, model card, and feature importance. It remains synthetic and not statistically valid production payment model training.
 - Persistence is JSON file storage, not PostgreSQL, Kafka, Redis, ledger storage, or event sourcing.
-- The UPI rail is fully mocked and does not connect to NPCI, PSPs, banks, UDIR, settlement, mandates, or UPI Lite infrastructure.
+- The payment ecosystem simulator is fully mocked and does not connect to NPCI, PSPs, banks, UDIR, settlement, mandates, or UPI Lite infrastructure.
 
 ## Serious Upgrade Path
 
@@ -32,4 +36,3 @@ It should not be presented as: **a production-ready payment router or certified 
 - Add idempotency keys, duplicate callback handling, retry-window logic, and settlement reconciliation states.
 - Add a domain scenario matrix for low, medium, and high reliability-risk conditions.
 - Promote local E2E into CI using a managed browser image when the repo is ready for longer CI runs.
-
