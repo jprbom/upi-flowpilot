@@ -16,6 +16,7 @@
   <img alt="Express" src="https://img.shields.io/badge/Express-5-111827?style=for-the-badge&logo=express&logoColor=white">
   <img alt="Mock UPI" src="https://img.shields.io/badge/NPCI%20UPI-Mocked%20Sandbox-f97316?style=for-the-badge">
   <img alt="Security" src="https://img.shields.io/badge/Audit-0%20High%20Vulns-16a34a?style=for-the-badge&logo=securityscorecard&logoColor=white">
+  <img alt="License" src="https://img.shields.io/badge/License-Proprietary%20All%20Rights%20Reserved-991b1b?style=for-the-badge">
 </p>
 
 <p align="center">
@@ -133,5 +134,15 @@ Backend health: `http://127.0.0.1:4101/api/health`
 - [Security](docs/SECURITY.md)
 - [SDLC](docs/SDLC.md)
 - [Testing](docs/TESTING.md)
+
+## License and Proprietary Rights
+
+This repository is **public for portfolio review only**. It is **not open source**.
+
+Copyright (c) 2026 Prashant Jagtap. All Rights Reserved.
+
+No one may use, copy, modify, distribute, deploy, commercialize, train on, or create derivative works from this code, documentation, diagrams, synthetic data, logos, UI designs, concepts, or repository materials without prior written permission from Prashant Jagtap.
+
+See [LICENSE](LICENSE) and [NOTICE](NOTICE.md). Permission requests: <jprbom@gmail.com>.
 
 **Author:** Prashant Jagtap <jprbom@gmail.com>

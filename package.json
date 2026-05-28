@@ -30,5 +30,6 @@
   "homepage": "https://github.com/jprbom/upi-flowpilot#readme",
   "bugs": {
     "url": "https://github.com/jprbom/upi-flowpilot/issues"
-  }
+  },
+  "license": "UNLICENSED"
 }
