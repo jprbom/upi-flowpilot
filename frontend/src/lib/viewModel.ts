@@ -16,3 +16,18 @@ export function scoreTone(score: number) {
   return 'healthy';
 }
 
+export function toneForRisk(value: number) {
+  return scoreTone(value);
+}
+
+export function formatValue(key: string, value: unknown) {
+  if (typeof value === 'number' && /rate|ratio|probability/i.test(key) && value >= 0 && value <= 1) {
+    return percent(value);
+  }
+  if (typeof value === 'number' && /amount|limit|inflow|outflow|threshold|value/i.test(key)) {
+    return formatInr(value);
+  }
+  if (typeof value === 'number') return value.toLocaleString('en-IN');
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value ?? '');
+}

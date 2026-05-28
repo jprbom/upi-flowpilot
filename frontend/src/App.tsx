@@ -1,70 +1,114 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Activity, Bell, GitBranch, Lock, Radar, RefreshCw, Route, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
+import { Activity, AlertTriangle, BrainCircuit, CheckCircle2, Database, Eye, FileCheck2, Lock, Network, RefreshCw, Route, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 import { apiRequest } from './api';
-import { formatInr, percent } from './lib/viewModel';
+import { formatValue, toneForRisk } from './lib/viewModel';
+import { buildMockUpiRequest, getWorkflowTab, workflowTabs, type WorkflowTab } from './lib/workflow';
 
-type Role = 'ADMIN' | 'OPS_MANAGER' | 'MERCHANT_ANALYST' | 'SUPPORT_AGENT' | 'VIEWER';
-type PaymentEvent = {
-  id: string;
-  merchantId: string;
-  amount: number;
-  payerBank: string;
-  psp: string;
-  flow: string;
-  status: string;
-  latencyMs: number;
-  failureReason?: string;
-  riskScore: number;
-  createdAt: string;
-};
-type Metrics = {
-  kpis: {
-    totalAttempts: number;
-    successRate: number;
-    failureRate: number;
-    averageLatencyMs: number;
-  };
-  failureReasons: Record<string, number>;
-};
-type Recommendation = {
-  recommendedFlow: string;
-  successProbability: number;
-  estimatedLatencySeconds: number;
-  reasonCodes: string[];
-  customerNudge: string;
-  merchantAction: string;
+type RecordItem = Record<string, unknown> & { id: string };
+type Metrics = { kpis: Record<string, number>; failureReasons?: Record<string, number> };
+type DomainResult = Record<string, unknown> & { reasonCodes?: string[]; explanation?: string; alternatives?: unknown[] };
+type MockUpiResult = {
+  gateway: string;
+  txnId: string;
+  rrn: string;
+  responseCode: string;
+  responseMessage: string;
+  npciStatus: string;
+  settlement: { mode: string; preSettlementHold: boolean; estimatedSettlementSeconds: number };
+  risk: { score: number; decision: string; reasonCodes: string[] };
 };
 
-const roles: Role[] = ['ADMIN', 'OPS_MANAGER', 'MERCHANT_ANALYST', 'SUPPORT_AGENT', 'VIEWER'];
-const fallbackEvents: PaymentEvent[] = [
-  { id: 'pay_001', merchantId: 'kirana-mumbai-44', amount: 2450, payerBank: 'HDFC Bank', psp: 'PhonePe', flow: 'UPI_INTENT', status: 'SUCCESS', latencyMs: 1380, riskScore: 18, createdAt: '2026-05-27T12:04:00.000Z' },
-  { id: 'pay_002', merchantId: 'food-cart-pune-11', amount: 190, payerBank: 'SBI', psp: 'GPay', flow: 'UPI_COLLECT', status: 'FAILED', latencyMs: 8900, failureReason: 'BANK_TIMEOUT', riskScore: 22, createdAt: '2026-05-27T12:05:00.000Z' },
-  { id: 'pay_003', merchantId: 'd2c-jaipur-88', amount: 8600, payerBank: 'ICICI Bank', psp: 'Paytm', flow: 'UPI_QR', status: 'RETRIED', latencyMs: 4100, failureReason: 'APP_SWITCH_DROP', riskScore: 31, createdAt: '2026-05-27T12:07:00.000Z' }
-];
-const fallbackMetrics: Metrics = {
-  kpis: { totalAttempts: 1820000, successRate: 0.9628, failureRate: 0.0372, averageLatencyMs: 1480 },
-  failureReasons: { BANK_TIMEOUT: 35, APP_SWITCH_DROP: 28, INSUFFICIENT_FUNDS: 14, SUCCESS: 86 }
-};
+const CONFIG = {
+  "title": "UPI FlowPilot",
+  "short": "Real-time UPI checkout reliability and payment-flow recovery engine.",
+  "roles": [
+    "ADMIN",
+    "OPS_MANAGER",
+    "MERCHANT_ANALYST",
+    "SUPPORT_AGENT",
+    "VIEWER"
+  ],
+  "defaultRole": "ADMIN",
+  "primary": {
+    "label": "Payment Events",
+    "route": "/payment-events",
+    "columns": [
+      "merchantId",
+      "flow",
+      "status",
+      "amount",
+      "riskScore"
+    ],
+    "createPayload": {
+      "merchantId": "demo-merchant-501",
+      "amount": 875,
+      "payerBank": "SBI",
+      "psp": "GPay",
+      "flow": "UPI_INTENT",
+      "status": "PENDING",
+      "latencyMs": 1180,
+      "riskScore": 24
+    },
+    "patchPayload": {
+      "status": "RETRIED",
+      "latencyMs": 900,
+      "failureReason": "RECOVERED_BY_FLOWPILOT"
+    }
+  },
+  "secondary": {
+    "label": "Routing Rules",
+    "route": "/routing-rules"
+  },
+  "domain": {
+    "label": "Smart Flow Decision",
+    "endpoint": "/recommendations",
+    "cta": "Run Success Predictor",
+    "payload": {
+      "amount": 240,
+      "payerBank": "SBI",
+      "psp": "GPay",
+      "collectDeclineRate": 0.31,
+      "payerBankSuccessRate": 0.9,
+      "customerSegment": "returning",
+      "riskScore": 18
+    },
+    "resultKey": "recommendedFlow",
+    "riskKey": "successProbability"
+  }
+} as const;
+
+const ICONS = [Route, Activity, Database, BrainCircuit, ShieldCheck, FileCheck2, Network, Lock];
 
 export default function App() {
-  const [role, setRole] = useState<Role>('OPS_MANAGER');
-  const [events, setEvents] = useState<PaymentEvent[]>(fallbackEvents);
-  const [metrics, setMetrics] = useState<Metrics>(fallbackMetrics);
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [error, setError] = useState('');
-  const [amount, setAmount] = useState(240);
+  const [role, setRole] = useState<string>(CONFIG.defaultRole);
+  const [activeTabId, setActiveTabId] = useState(workflowTabs[0].id);
+  const [primary, setPrimary] = useState<RecordItem[]>([]);
+  const [secondary, setSecondary] = useState<RecordItem[]>([]);
+  const [selected, setSelected] = useState<RecordItem | null>(null);
+  const [metrics, setMetrics] = useState<Metrics>({ kpis: {} });
+  const [domainResult, setDomainResult] = useState<DomainResult | null>(null);
+  const [mockResult, setMockResult] = useState<MockUpiResult | null>(null);
+  const [notice, setNotice] = useState('Ready: all CTAs use synthetic test data and mocked UPI rails.');
+  const [amount, setAmount] = useState(875);
+
+  const activeTab = getWorkflowTab(activeTabId);
+  const highRiskCount = useMemo(() => primary.filter((item) => Number(item.riskScore ?? item.impulseScore ?? 0) >= 70).length, [primary]);
+  const totalAmount = useMemo(() => primary.reduce((sum, item) => sum + Number(item.amount ?? item.monthlyInflow ?? item.amountAtRisk ?? 0), 0), [primary]);
 
   async function load() {
     try {
-      const [nextMetrics, nextEvents] = await Promise.all([
+      const [nextMetrics, nextPrimary, nextSecondary] = await Promise.all([
         apiRequest<Metrics>('/metrics', role),
-        apiRequest<PaymentEvent[]>('/payment-events', role)
+        apiRequest<RecordItem[]>(CONFIG.primary.route, role),
+        apiRequest<RecordItem[]>(CONFIG.secondary.route, role)
       ]);
       setMetrics(nextMetrics);
-      setEvents(nextEvents);
-      setError('');
-    } catch {
-      setError('API offline: showing synthetic portfolio data.');
+      setPrimary(nextPrimary);
+      setSecondary(nextSecondary);
+      setSelected(nextPrimary[0] ?? null);
+      setNotice('Loaded live synthetic API data through RBAC role ' + role + '.');
+    } catch (error) {
+      setNotice('API request failed: ' + (error instanceof Error ? error.message : 'unknown error'));
     }
   }
 
@@ -72,110 +116,189 @@ export default function App() {
     void load();
   }, [role]);
 
-  const revenueLeakage = useMemo(() => events.filter((event) => event.status === 'FAILED').reduce((sum, event) => sum + event.amount, 0), [events]);
-
-  async function simulate() {
-    const result = await apiRequest<Recommendation>('/recommendations', role, {
-      method: 'POST',
-      body: JSON.stringify({
-        amount,
-        payerBank: 'SBI',
-        psp: 'GPay',
-        collectDeclineRate: 0.31,
-        payerBankSuccessRate: 0.9,
-        customerSegment: amount <= 500 ? 'returning' : 'new',
-        riskScore: 18
-      })
-    });
-    setRecommendation(result);
+  async function runDomainDecision() {
+    try {
+      const response = await apiRequest<DomainResult>(CONFIG.domain.endpoint, role, {
+        method: 'POST',
+        body: JSON.stringify(CONFIG.domain.payload)
+      });
+      setDomainResult(response);
+      setActiveTabId(workflowTabs.find((tab) => tab.apiFlow.includes(CONFIG.domain.endpoint))?.id ?? activeTabId);
+      setNotice(CONFIG.domain.label + ' completed with reason-code output.');
+    } catch (error) {
+      setNotice('Decision failed: ' + (error instanceof Error ? error.message : 'unknown error'));
+    }
   }
 
-  async function createEvent() {
-    const created = await apiRequest<PaymentEvent>('/payment-events', role, {
-      method: 'POST',
-      body: JSON.stringify({
-        merchantId: 'demo-merchant-' + Math.floor(Math.random() * 900),
-        amount,
-        payerBank: 'SBI',
-        psp: 'GPay',
-        flow: amount <= 500 ? 'UPI_LITE' : 'UPI_INTENT',
-        status: 'PENDING',
-        latencyMs: 1200,
-        riskScore: 18
-      })
-    });
-    setEvents([created, ...events]);
+  async function runMockRail(tab: WorkflowTab = activeTab) {
+    try {
+      const payload = buildMockUpiRequest(tab, amount);
+      const response = await apiRequest<MockUpiResult>('/mock-upi', role, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      setMockResult(response);
+      setNotice('Mock UPI rail returned ' + response.npciStatus + ' with RRN ' + response.rrn + '.');
+    } catch (error) {
+      setNotice('Mock UPI failed: ' + (error instanceof Error ? error.message : 'unknown error'));
+    }
   }
 
-  async function removeEvent(id: string) {
-    await apiRequest<void>('/payment-events/' + id, role, { method: 'DELETE' });
-    setEvents(events.filter((event) => event.id !== id));
+  async function createRecord() {
+    try {
+      const created = await apiRequest<RecordItem>(CONFIG.primary.route, role, {
+        method: 'POST',
+        body: JSON.stringify(CONFIG.primary.createPayload)
+      });
+      setPrimary([created, ...primary]);
+      setSelected(created);
+      setActiveTabId(workflowTabs[2]?.id ?? activeTabId);
+      setNotice('Created test record ' + created.id + ' through ' + CONFIG.primary.route + '.');
+    } catch (error) {
+      setNotice('Create failed: ' + (error instanceof Error ? error.message : 'unknown error'));
+    }
+  }
+
+  async function patchSelected() {
+    const target = selected ?? primary[0];
+    if (!target) {
+      setNotice('No record available to patch.');
+      return;
+    }
+    try {
+      const updated = await apiRequest<RecordItem>(CONFIG.primary.route + '/' + target.id, role, {
+        method: 'PATCH',
+        body: JSON.stringify(CONFIG.primary.patchPayload)
+      });
+      setPrimary(primary.map((item) => item.id === updated.id ? updated : item));
+      setSelected(updated);
+      setNotice('Patched drill-down record ' + updated.id + ' with review outcome.');
+    } catch (error) {
+      setNotice('Patch failed: ' + (error instanceof Error ? error.message : 'unknown error'));
+    }
+  }
+
+  async function removeSelected() {
+    const target = selected ?? primary[0];
+    if (!target) {
+      setNotice('No record available to delete.');
+      return;
+    }
+    try {
+      await apiRequest<void>(CONFIG.primary.route + '/' + target.id, role, { method: 'DELETE' });
+      const nextPrimary = primary.filter((item) => item.id !== target.id);
+      setPrimary(nextPrimary);
+      setSelected(nextPrimary[0] ?? null);
+      setNotice('Deleted ' + target.id + '. Switch to non-admin roles to see RBAC denial.');
+    } catch (error) {
+      setNotice('Delete failed: ' + (error instanceof Error ? error.message : 'unknown error'));
+    }
+  }
+
+  function openDrillDown(tab: WorkflowTab) {
+    setActiveTabId(tab.id);
+    setSelected(primary[0] ?? null);
+    setNotice(tab.drillDown);
   }
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="brand"><img src="/logo.svg" alt="" /><span>UPI FlowPilot</span></div>
-        {['Overview', 'Flows', 'Transactions', 'Reliability', 'Routing Rules', 'Banks and PSPs', 'Alerts', 'Simulator'].map((item, index) => (
-          <button className={index === 0 ? 'nav-item active' : 'nav-item'} key={item}><Route size={16} />{item}</button>
-        ))}
-        <div className="region-card"><span>Region</span><strong>Bharat</strong><small>Live synthetic UPI network</small></div>
+        <div className="brand"><img src="/logo.svg" alt="" /><span>{CONFIG.title}</span></div>
+        {workflowTabs.map((item, index) => {
+          const Icon = ICONS[index % ICONS.length];
+          return (
+            <button className={item.id === activeTabId ? 'nav-item active' : 'nav-item'} key={item.id} onClick={() => openDrillDown(item)} aria-pressed={item.id === activeTabId}>
+              <Icon size={16} />{item.label}
+            </button>
+          );
+        })}
+        <div className="region-card"><span>Sandbox</span><strong>NPCI UPI Mock</strong><small>Live synthetic endpoints</small></div>
       </aside>
       <main>
         <header className="topbar">
           <div>
-            <h1>Real-time UPI Checkout Reliability</h1>
-            <p>Flow selection, retry intelligence, UPI Lite fallback, and bank degradation diagnosis.</p>
+            <h1>{CONFIG.title}</h1>
+            <p>{CONFIG.short}</p>
           </div>
           <div className="top-actions">
             <span className="live-dot">Live</span>
-            <select value={role} onChange={(event) => setRole(event.target.value as Role)}>{roles.map((item) => <option key={item}>{item}</option>)}</select>
+            <select value={role} onChange={(event) => setRole(event.target.value)} aria-label="RBAC role">{CONFIG.roles.map((item) => <option key={item}>{item}</option>)}</select>
             <button onClick={load}><RefreshCw size={16} />Refresh</button>
           </div>
         </header>
-        {error ? <div className="notice">{error}</div> : null}
+        <div className="notice">{notice}</div>
         <section className="kpi-grid">
-          <Metric title="Attempts" value={metrics.kpis.totalAttempts.toLocaleString('en-IN')} detail="+12.6% synthetic load" icon={<Activity />} />
-          <Metric title="Success Rate" value={percent(metrics.kpis.successRate)} detail="best route model" icon={<ShieldCheck />} />
-          <Metric title="Avg Latency" value={metrics.kpis.averageLatencyMs + ' ms'} detail="bank and PSP health" icon={<Radar />} />
-          <Metric title="Leakage Watch" value={formatInr(revenueLeakage)} detail="failed value in table" icon={<Bell />} />
+          <Metric title={CONFIG.primary.label} value={String(primary.length)} detail="live API records" icon={<Activity />} />
+          <Metric title={CONFIG.secondary.label} value={String(secondary.length)} detail="policy/reference records" icon={<FileCheck2 />} />
+          <Metric title="Risk Watch" value={String(highRiskCount)} detail="records above review line" icon={<AlertTriangle />} />
+          <Metric title="Amount Signal" value={formatValue('amount', totalAmount)} detail="synthetic portfolio value" icon={<ShieldCheck />} />
         </section>
         <section className="workspace-grid">
           <div className="panel span-two">
-            <div className="panel-title"><GitBranch size={18} /> Smart Flow Recommendation</div>
-            <div className="simulator-row">
-              <label>Amount <input type="number" value={amount} onChange={(event) => setAmount(Number(event.target.value))} /></label>
-              <button onClick={simulate}><Sparkles size={16} />Simulate</button>
-              <button onClick={createEvent}><Activity size={16} />Create Payment Event</button>
+            <div className="panel-title"><Sparkles size={18} /> {activeTab.label}</div>
+            <p>{activeTab.description}</p>
+            <div className="tab-detail">
+              <div><span>CTA</span><strong>{activeTab.cta}</strong></div>
+              <div><span>Drill-down</span><strong>{activeTab.drillDown}</strong></div>
+              <div><span>API Flow</span><strong>{activeTab.apiFlow}</strong></div>
             </div>
-            <div className="recommendation-card">
-              <div>
-                <span>Recommended Flow</span>
-                <strong>{recommendation?.recommendedFlow || 'Run simulator'}</strong>
-              </div>
-              <div>
-                <span>Success Probability</span>
-                <strong>{recommendation ? percent(recommendation.successProbability) : '0%'}</strong>
-              </div>
-              <p>{recommendation?.merchantAction || 'The optimizer weighs payer bank health, collect decline history, amount, risk, and customer segment.'}</p>
+            <div className="simulator-row">
+              <label>Mock amount <input aria-label="Mock amount" type="number" value={amount} onChange={(event) => setAmount(Number(event.target.value))} /></label>
+              <button onClick={runDomainDecision}><BrainCircuit size={16} />{CONFIG.domain.cta}</button>
+              <button onClick={() => runMockRail()}><Network size={16} />Mock UPI/NPCI</button>
+              <button onClick={createRecord}><Activity size={16} />Create Test Data</button>
+              <button onClick={patchSelected}><CheckCircle2 size={16} />Mark Reviewed</button>
+              <button onClick={removeSelected}><Trash2 size={16} />Delete Selected</button>
             </div>
           </div>
           <div className="panel">
-            <div className="panel-title"><Radar size={18} /> Failure Mix</div>
-            {Object.entries(metrics.failureReasons).map(([reason, value]) => (
-              <div className="bar-row" key={reason}><span>{reason}</span><div><i style={{ width: Math.min(value * 2, 100) + '%' }} /></div><b>{value}</b></div>
-            ))}
+            <div className="panel-title"><Lock size={18} /> Decision Output</div>
+            <div className="recommendation-card">
+              <div><span>{CONFIG.domain.resultKey}</span><strong>{String(domainResult?.[CONFIG.domain.resultKey] ?? 'Run model')}</strong></div>
+              <div><span>{CONFIG.domain.riskKey}</span><strong>{formatValue(CONFIG.domain.riskKey, domainResult?.[CONFIG.domain.riskKey] ?? 0)}</strong></div>
+              <p>{String(domainResult?.explanation ?? 'Use the model CTA to generate explainable reason codes from the domain engine.')}</p>
+            </div>
+            <div className="reason-list">
+              {(domainResult?.reasonCodes ?? ['READY_FOR_TEST_DATA', 'RBAC_ENABLED', 'MOCK_UPI_READY']).map((code) => <span className="chip" key={code}>{code}</span>)}
+            </div>
+          </div>
+          <div className="panel span-two">
+            <div className="panel-title"><Network size={18} /> Mock NPCI/UPI Response</div>
+            {mockResult ? (
+              <div className="mock-card">
+                <strong>{mockResult.npciStatus} / {mockResult.responseCode}</strong>
+                <span>RRN: {mockResult.rrn}</span>
+                <span>Txn: {mockResult.txnId}</span>
+                <span>Hold: {mockResult.settlement.preSettlementHold ? 'Yes' : 'No'}</span>
+                <p>{mockResult.responseMessage}</p>
+                <div className="reason-list">{mockResult.risk.reasonCodes.map((code) => <span className="chip" key={code}>{code}</span>)}</div>
+              </div>
+            ) : <p>Run Mock UPI/NPCI to see a sandbox response with RRN, bank reference, response code, webhook status, and settlement behavior.</p>}
+          </div>
+          <div className="panel">
+            <div className="panel-title"><Eye size={18} /> Drill-down</div>
+            {selected ? <DetailCard item={selected} /> : <p>Select or create a record to open a drill-down.</p>}
           </div>
           <div className="panel span-three">
-            <div className="panel-title"><Lock size={18} /> Payment Events CRUD</div>
+            <div className="panel-title"><Database size={18} /> {CONFIG.primary.label} End-to-End CRUD</div>
             <div className="table">
-              <div className="table-row header"><span>Merchant</span><span>Flow</span><span>Status</span><span>Amount</span><span>Latency</span><span>Action</span></div>
-              {events.map((event) => (
-                <div className="table-row" key={event.id}>
-                  <span>{event.merchantId}</span><span>{event.flow}</span><span className={'status ' + event.status.toLowerCase()}>{event.status}</span><span>{formatInr(event.amount)}</span><span>{event.latencyMs} ms</span>
-                  <span><button className="icon-button" onClick={() => void removeEvent(event.id)}><Trash2 size={15} /></button></span>
-                </div>
-              ))}
+              <div className="table-row header">{CONFIG.primary.columns.map((column) => <span key={column}>{column}</span>)}<span>Action</span></div>
+              {primary.map((item) => {
+                const risk = Number(item.riskScore ?? item.impulseScore ?? 0);
+                return (
+                  <button className="table-row table-button" key={item.id} onClick={() => setSelected(item)}>
+                    {CONFIG.primary.columns.map((column) => <span className={/risk|impulse|score/i.test(column) ? 'status ' + toneForRisk(risk) : ''} key={column}>{formatValue(column, item[column])}</span>)}
+                    <span><Eye size={15} /> Open</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="panel span-three">
+            <div className="panel-title"><FileCheck2 size={18} /> {CONFIG.secondary.label}</div>
+            <div className="secondary-grid">
+              {secondary.map((item) => <DetailCard item={item} key={item.id} />)}
             </div>
           </div>
         </section>
@@ -184,7 +307,10 @@ export default function App() {
   );
 }
 
+function DetailCard({ item }: { item: RecordItem }) {
+  return <div className="case-card">{Object.entries(item).filter(([key]) => !['id', 'createdAt'].includes(key)).slice(0, 6).map(([key, value]) => <p key={key}><strong>{key}</strong>: {formatValue(key, value)}</p>)}</div>;
+}
+
 function Metric({ title, value, detail, icon }: { title: string; value: string; detail: string; icon: ReactNode }) {
   return <div className="metric-card"><div>{icon}</div><span>{title}</span><strong>{value}</strong><small>{detail}</small></div>;
 }
-

@@ -8,3 +8,4 @@ data/app-db.json
 frontend/vite.config.js
 frontend/vite.config.d.ts
 frontend/tsconfig.node.tsbuildinfo
+backend/data/app-db.json

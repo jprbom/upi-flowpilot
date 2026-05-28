@@ -1,25 +1,43 @@
-<svg width="1120" height="310" viewBox="0 0 1120 310" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UPI FlowPilot system map">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="UPI FlowPilot unique system map">
   <defs>
-    <linearGradient id="brand" x1="40" y1="0" x2="1080" y2="300"><stop stop-color="#f97316"/><stop offset=".55" stop-color="#06b6d4"/><stop offset="1" stop-color="#22c55e"/></linearGradient>
-    <style>
-      .canvas{fill:#f8fafc}.box{fill:#fff;stroke:url(#brand);stroke-width:2;filter:drop-shadow(0 12px 24px rgba(15,23,42,.12))}
-      .boxTitle{font:800 15px ui-sans-serif,Segoe UI,Arial;fill:#0f172a;text-anchor:middle}
-      .boxSub{font:600 12px ui-sans-serif,Segoe UI,Arial;fill:#64748b;text-anchor:middle}
-      .title{font:900 30px ui-sans-serif,Segoe UI,Arial;fill:#0f172a}
-      .flow{stroke:url(#brand);stroke-width:5;stroke-linecap:round;stroke-dasharray:10 10}
-    </style>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity=".18"/></filter>
   </defs>
-  <rect width="1120" height="310" rx="28" class="canvas"/>
-  <text x="55" y="62" class="title">System Flow: UPI FlowPilot</text>
-  <g><rect x="55" y="110" width="145" height="86" rx="18" class="box"/><text x="127" y="144" class="boxTitle">React RBAC UI</text><text x="127" y="168" class="boxSub">role-aware</text></g>
-<g><rect x="232" y="110" width="145" height="86" rx="18" class="box"/><text x="304" y="144" class="boxTitle">Express API</text><text x="304" y="168" class="boxSub">secure routes</text></g>
-<g><rect x="409" y="110" width="145" height="86" rx="18" class="box"/><text x="481" y="144" class="boxTitle">Zod validation</text><text x="481" y="168" class="boxSub">typed input</text></g>
-<g><rect x="586" y="110" width="145" height="86" rx="18" class="box"/><text x="658" y="144" class="boxTitle">Decision engine</text><text x="658" y="168" class="boxSub">Recommend best UPI rail</text></g>
-<g><rect x="763" y="110" width="145" height="86" rx="18" class="box"/><text x="835" y="144" class="boxTitle">JSON DB</text><text x="835" y="168" class="boxSub">synthetic</text></g>
-<g><rect x="940" y="110" width="145" height="86" rx="18" class="box"/><text x="1012" y="144" class="boxTitle">Reason codes</text><text x="1012" y="168" class="boxSub">explainable</text></g>
-  <path d="M200 153H232" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
-<path d="M377 153H409" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
-<path d="M554 153H586" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
-<path d="M731 153H763" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
-<path d="M908 153H940" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+  <rect width="1200" height="420" rx="28" fill="#f8fafc"/>
+  <path d="M0 70 C180 20 310 120 470 70 C670 8 780 120 960 68 C1070 36 1140 48 1200 70 L1200 0 L0 0 Z" fill="url(#g)" opacity=".18"/>
+  <text x="60" y="62" font-family="Inter, Segoe UI, Arial" font-size="34" font-weight="800" fill="#0f172a">UPI FlowPilot</text>
+  <text x="60" y="96" font-family="Inter, Segoe UI, Arial" font-size="17" fill="#475569">Real-time UPI checkout reliability and payment-flow recovery engine.</text>
+  <g filter="url(#shadow)">
+      <rect x="70" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
+      <circle cx="104" cy="184" r="14" fill="#f97316" opacity=".85"/>
+      <text x="128" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Overview</text>
+      <text x="94" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
+      <text x="94" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
+    </g><path d="M300 216 L335 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+      <rect x="345" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
+      <circle cx="379" cy="184" r="14" fill="#f97316" opacity=".85"/>
+      <text x="403" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Flow Optimizer</text>
+      <text x="369" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
+      <text x="369" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
+    </g><path d="M575 216 L610 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+      <rect x="620" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
+      <circle cx="654" cy="184" r="14" fill="#f97316" opacity=".85"/>
+      <text x="678" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Transactions</text>
+      <text x="644" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
+      <text x="644" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
+    </g><path d="M850 216 L885 216" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+      <rect x="895" y="150" width="220" height="132" rx="18" fill="#ffffff" stroke="#dbe3ef"/>
+      <circle cx="929" cy="184" r="14" fill="#f97316" opacity=".85"/>
+      <text x="953" y="190" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#0f172a">Reliability SRE</text>
+      <text x="919" y="226" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">CTA, drill-down, API,</text>
+      <text x="919" y="248" font-family="Inter, Segoe UI, Arial" font-size="13" fill="#64748b">reason codes, and RBAC</text>
+    </g>
+  <rect x="380" y="330" width="440" height="48" rx="24" fill="url(#g)"/>
+  <text x="438" y="361" font-family="Inter, Segoe UI, Arial" font-size="18" font-weight="800" fill="#ffffff">Mock NPCI/UPI Sandbox + Synthetic AI Model Layer</text>
 </svg>

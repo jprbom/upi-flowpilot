@@ -1,0 +1,45 @@
+{
+  "project": "UPI FlowPilot",
+  "target": "payment_success",
+  "features": [
+    "amount",
+    "bank_success_rate",
+    "collect_decline_rate",
+    "risk_score",
+    "latency_ms"
+  ],
+  "data_policy": "Synthetic portfolio data only; no live UPI/NPCI/bank/PSP/customer data.",
+  "models": {
+    "aiml_logistic_regression": {
+      "accuracy_on_synthetic_training_set": 1.0,
+      "weights": [
+        -5.8607,
+        4.1667,
+        1.6835,
+        -4.0918,
+        -5.4712
+      ],
+      "bias": 4.2086
+    },
+    "dl_tiny_neural_network": {
+      "accuracy_on_synthetic_training_set": 1.0,
+      "hidden_units": 4
+    }
+  },
+  "normalization": {
+    "min": [
+      240,
+      0.88,
+      0.04,
+      9,
+      620
+    ],
+    "max": [
+      8600,
+      0.99,
+      0.31,
+      42,
+      7200
+    ]
+  }
+}
