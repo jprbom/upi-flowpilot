@@ -232,6 +232,23 @@ input { min-height: 38px; border: 1px solid var(--line); border-radius: 8px; pad
 .secondary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .mock-card { display: grid; gap: 6px; }
 .mock-card p { margin-top: 4px; }
+.active-output {
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, var(--surface)), var(--surface));
+}
+.active-output strong { color: var(--ink); line-height: 1.35; }
+.output-grid { display: grid; gap: 7px; }
+.output-grid span {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
 @media (max-width: 1000px) {
   .tab-detail, .secondary-grid { grid-template-columns: 1fr; }
 }

@@ -4,6 +4,7 @@ coverage
 .env
 data/app-db.json
 *.log
+artifacts/
 
 frontend/vite.config.js
 frontend/vite.config.d.ts

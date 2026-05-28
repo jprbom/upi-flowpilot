@@ -7,6 +7,7 @@ import { buildMockUpiRequest, getWorkflowTab, workflowTabs, type WorkflowTab } f
 type RecordItem = Record<string, unknown> & { id: string };
 type Metrics = { kpis: Record<string, number>; failureReasons?: Record<string, number> };
 type DomainResult = Record<string, unknown> & { reasonCodes?: string[]; explanation?: string; alternatives?: unknown[] };
+type TabOutput = { title: string; summary: string; facts: string[]; codes: string[] };
 type MockUpiResult = {
   gateway: string;
   txnId: string;
@@ -87,6 +88,7 @@ export default function App() {
   const [selected, setSelected] = useState<RecordItem | null>(null);
   const [metrics, setMetrics] = useState<Metrics>({ kpis: {} });
   const [domainResult, setDomainResult] = useState<DomainResult | null>(null);
+  const [tabOutput, setTabOutput] = useState<TabOutput | null>(null);
   const [mockResult, setMockResult] = useState<MockUpiResult | null>(null);
   const [notice, setNotice] = useState('Ready: all CTAs use synthetic test data and mocked UPI rails.');
   const [amount, setAmount] = useState(875);
@@ -142,6 +144,45 @@ export default function App() {
     } catch (error) {
       setNotice('Mock UPI failed: ' + (error instanceof Error ? error.message : 'unknown error'));
     }
+  }
+
+  function buildTabOutput(tab: WorkflowTab, summary: string, codes: string[] = []) {
+    setTabOutput({
+      title: tab.label + ' Output',
+      summary,
+      facts: [
+        'API flow: ' + tab.apiFlow,
+        CONFIG.primary.label + ': ' + primary.length + ' live records',
+        CONFIG.secondary.label + ': ' + secondary.length + ' policy records',
+        'Amount signal: ' + formatValue('amount', totalAmount),
+        selected ? 'Selected drill-down: ' + selected.id : 'Selected drill-down: none'
+      ],
+      codes
+    });
+  }
+
+  async function runActiveTabCta() {
+    if (activeTab.apiFlow.includes(CONFIG.domain.endpoint)) {
+      await runDomainDecision();
+      buildTabOutput(activeTab, 'Generated ranked UPI flow recommendation from checkout test data.', ['MODEL_DECISION_READY', 'FLOW_RANKING_RENDERED']);
+      return;
+    }
+    if (activeTab.apiFlow.includes('/mock-upi')) {
+      await runMockRail(activeTab);
+      buildTabOutput(activeTab, 'Sent a synthetic NPCI-style payment request for this tab scenario.', ['MOCK_RAIL_RESPONSE', activeTab.mockScenario]);
+      return;
+    }
+    if (activeTab.apiFlow.includes(CONFIG.primary.route)) {
+      await createRecord();
+      buildTabOutput(activeTab, 'Created a new payment event from the tab-specific test payload.', ['CRUD_CREATE_OK', 'DRILLDOWN_UPDATED']);
+      return;
+    }
+    if (activeTab.apiFlow.includes(CONFIG.secondary.route)) {
+      setSelected(secondary[0] ?? primary[0] ?? null);
+      buildTabOutput(activeTab, 'Opened routing-rule evidence from live synthetic records.', ['RULE_REVIEW_READY', 'RBAC_READ_OK']);
+      return;
+    }
+    buildTabOutput(activeTab, 'Opened dashboard evidence from metrics, primary records, and policy records.', ['TAB_CONTEXT_READY', 'TEST_DATA_BOUND']);
   }
 
   async function createRecord() {
@@ -245,6 +286,7 @@ export default function App() {
             </div>
             <div className="simulator-row">
               <label>Mock amount <input aria-label="Mock amount" type="number" value={amount} onChange={(event) => setAmount(Number(event.target.value))} /></label>
+              <button onClick={runActiveTabCta}><Sparkles size={16} />{activeTab.cta}</button>
               <button onClick={runDomainDecision}><BrainCircuit size={16} />{CONFIG.domain.cta}</button>
               <button onClick={() => runMockRail()}><Network size={16} />Mock UPI/NPCI</button>
               <button onClick={createRecord}><Activity size={16} />Create Test Data</button>
@@ -275,6 +317,10 @@ export default function App() {
                 <div className="reason-list">{mockResult.risk.reasonCodes.map((code) => <span className="chip" key={code}>{code}</span>)}</div>
               </div>
             ) : <p>Run Mock UPI/NPCI to see a sandbox response with RRN, bank reference, response code, webhook status, and settlement behavior.</p>}
+          </div>
+          <div className="panel">
+            <div className="panel-title"><Sparkles size={18} /> Active Tab Output</div>
+            {tabOutput ? <TabOutputPanel output={tabOutput} /> : <p>Click the selected tab CTA to produce test-data output for this workflow.</p>}
           </div>
           <div className="panel">
             <div className="panel-title"><Eye size={18} /> Drill-down</div>
@@ -309,6 +355,17 @@ export default function App() {
 
 function DetailCard({ item }: { item: RecordItem }) {
   return <div className="case-card">{Object.entries(item).filter(([key]) => !['id', 'createdAt'].includes(key)).slice(0, 6).map(([key, value]) => <p key={key}><strong>{key}</strong>: {formatValue(key, value)}</p>)}</div>;
+}
+
+function TabOutputPanel({ output }: { output: TabOutput }) {
+  return (
+    <div className="active-output">
+      <strong>{output.title}</strong>
+      <p>{output.summary}</p>
+      <div className="output-grid">{output.facts.map((fact) => <span key={fact}>{fact}</span>)}</div>
+      <div className="reason-list">{output.codes.map((code) => <span className="chip" key={code}>{code}</span>)}</div>
+    </div>
+  );
 }
 
 function Metric({ title, value, detail, icon }: { title: string; value: string; detail: string; icon: ReactNode }) {

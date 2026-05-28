@@ -17,4 +17,32 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run verify
-
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+      - name: Start local preview stack
+        shell: bash
+        run: |
+          npm --workspace backend run start > backend.log 2>&1 &
+          npm --workspace frontend run preview -- --host 127.0.0.1 > frontend.log 2>&1 &
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4101/api/health >/dev/null && curl -fsS http://127.0.0.1:5101 >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat backend.log || true
+          cat frontend.log || true
+          exit 1
+      - name: Browser E2E smoke
+        env:
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: npm run test:e2e:local
+      - name: Upload evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-evidence
+          path: |
+            artifacts/
+            backend.log
+            frontend.log

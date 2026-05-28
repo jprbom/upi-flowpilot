@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { ZodError } from 'zod';
 import { roleCatalogue } from './auth.js';
 import { createDefaultDatabase, type JsonDatabase } from './db.js';
+import { registerOperationalEndpoints } from './observability.js';
 import { registerRoutes } from './routes.js';
 
 export function createApp(database: JsonDatabase = createDefaultDatabase()) {
@@ -14,6 +15,7 @@ export function createApp(database: JsonDatabase = createDefaultDatabase()) {
   app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true }));
   app.use(rateLimit({ windowMs: 60_000, limit: 240, standardHeaders: true, legacyHeaders: false }));
   app.use(express.json({ limit: '512kb' }));
+  registerOperationalEndpoints(app, { service: 'UPI FlowPilot', port: Number(process.env.PORT ?? 4101) });
 
   app.get('/api/health', (_req, res) => {
     res.json({
@@ -43,4 +45,3 @@ export function createApp(database: JsonDatabase = createDefaultDatabase()) {
 
   return app;
 }
-
