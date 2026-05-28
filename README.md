@@ -1,186 +1,92 @@
 <p align="center">
-  <img src="docs/assets/hero.svg" width="100%" alt="UPI FlowPilot rich animated hero infographic">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=240&color=gradient&text=UPI%20FlowPilot&fontAlign=50&fontAlignY=38&fontSize=48&fontColor=ffffff&desc=Real-time%20UPI%20checkout%20reliability%20and%20payment-flow%20recovery%20engine&descAlign=50&descAlignY=60&descSize=16&animation=fadeIn" width="100%" alt="UPI FlowPilot animated hero banner"/>
 </p>
 
 <p align="center">
-  <img src="frontend/public/logo.svg" width="92" alt="UPI FlowPilot animated logo">
-</p>
-
-<h1 align="center">UPI FlowPilot</h1>
-
-<p align="center"><strong>Real-time UPI checkout reliability and payment-flow recovery engine.</strong></p>
-
-<p align="center">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white">
-  <img alt="React" src="https://img.shields.io/badge/React-19-149eca?style=for-the-badge&logo=react&logoColor=white">
-  <img alt="Express" src="https://img.shields.io/badge/Express-5-111827?style=for-the-badge&logo=express&logoColor=white">
-  <img alt="Mock UPI" src="https://img.shields.io/badge/NPCI%20UPI-Mocked%20Sandbox-f97316?style=for-the-badge">
-  <img alt="Security" src="https://img.shields.io/badge/Audit-0%20High%20Vulns-16a34a?style=for-the-badge&logo=securityscorecard&logoColor=white">
-  <img alt="License" src="https://img.shields.io/badge/License-Proprietary%20All%20Rights%20Reserved-991b1b?style=for-the-badge">
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=22&duration=2600&pause=900&center=true&vCenter=true&width=900&lines=Investor+Showcase+%7C+No+Proprietary+Source+Code;UPI+Checkout+Reliability+%7C+Fallback+Intelligence;India-scale+Payment+Flow+Observability" alt="animated project narrative"/>
 </p>
 
 <p align="center">
-  <a href="#concept">Concept</a> &middot;
-  <a href="#working-demo">Working Demo</a> &middot;
-  <a href="#bfsi--fintech-benefit">BFSI Benefit</a> &middot;
-  <a href="#aiml--dl-layer">AIML/DL</a> &middot;
-  <a href="#run-locally">Run Locally</a>
+  <img src="https://img.shields.io/badge/Showcase-Concept%20Repository-0f172a?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Domain-UPI%20%7C%20Payments%20%7C%20Merchant%20Reliability-2563eb?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Code-Not%20Exposed-991b1b?style=for-the-badge">
 </p>
 
-## Concept
+# UPI FlowPilot
 
-UPI FlowPilot is a full-stack UPI-native AI infrastructure prototype. It combines a React RBAC command center, secure Express APIs, CRUD data operations, concept-specific decisioning, and a mocked NPCI/UPI rail response layer. The repo is designed for portfolio demonstration and SDLC review, not live payment processing.
+**Real-time UPI checkout reliability and payment-flow recovery engine.**
 
-The system uses synthetic data to show how a BFSI or fintech product team could operate real-time upi checkout reliability and payment-flow recovery engine. without touching real customer, bank, PSP, NPCI, or UPI rail data.
+This repository is a public concept showcase. It explains the thesis, ecosystem value, architecture logic, AI/ML role, operating model and investor-facing roadmap. It does not expose proprietary source code, credentials, internal APIs, prompts, risk rules, models, datasets or production deployment details.
 
-## Prototype Positioning
+---
 
-This repo is intentionally positioned as a **runnable synthetic prototype**, not a production fintech system. The frontend, APIs, CRUD, RBAC workflow, mock UPI response, tests, Docker files, and documentation are real. The payment rail, security authority, persistence, and AIML/DL models are controlled demo layers.
+## Why this matters
 
-Use the phrasing: "UPI-native AI product prototype with SDLC packaging." Avoid the phrasing: "production-ready UPI payment platform."
+UPI checkout failures are not always bank failures. They can emerge from PSP degradation, issuer latency, timeout behaviour, retry loops, merchant UX gaps, device state, QR mismatch, collect expiry, fallback absence and weak operational telemetry.
 
-## Latest Enhancements
+A merchant sees a failed transaction. A PSP sees an event. A bank sees a response code. The user sees friction. Nobody gets the full reliability story fast enough.
 
-This release closes the latest audit loop with practical, testable upgrades:
+## Product thesis
 
-| Area | Enhancement |
-| --- | --- |
-| Payment lifecycle | Added a five-adapter payment ecosystem simulator: PG, PA, TPAP, PSP/bank, and NPCI-style UPI rail. |
-| Webhooks | Added HMAC webhook signatures, duplicate-event idempotency, out-of-order delivery handling, and terminal-state governance. |
-| Security | Replaced raw role headers with signed local demo bearer tokens from `/api/auth/demo-token`; forged `x-user-role` is ignored. |
-| Frontend | Added a **Payment Ecosystem Timeline** CTA and visual lifecycle panel. |
-| AIML/DL | Upgraded `ml/train_model.py` to generate 10,000 synthetic rows, train/test split, metrics, confusion matrix, model card, and feature importance. |
-| Documentation | Added API contract, data model, threat model, observability, model governance, deployment, enterprise architecture, and investor due-diligence docs. |
-| Validation | `npm run verify` and browser E2E smoke tests pass locally with payment ecosystem coverage. |
+UPI FlowPilot is a merchant-side reliability intelligence layer that observes checkout events, detects degradation patterns, recommends safer rails, and guides retry/fallback decisions without exposing sensitive payment infrastructure.
 
-## Working Demo
+The product is not a payment gateway. It is a reliability brain for UPI checkout journeys.
 
-The frontend now has working tabs, CTAs, row drill-downs, create/patch/delete CRUD actions, domain-specific AI decision calls, and a mock UPI/NPCI request-response flow.
+---
 
-| Flow | What works |
-| --- | --- |
-| RBAC | Role selector requests a signed local demo bearer token. Forged `x-user-role` headers are ignored. |
-| Tabs | Every sidebar tab changes active content and drill-down context. |
-| CRUD | The primary workspace can create, patch, inspect, and delete synthetic records. |
-| AI decision | `/recommendations` returns explainable reason codes. |
-| Mock UPI | `/api/mock-upi` returns RRN, UPI request id, bank reference, response code, settlement state, and webhook metadata. |
-| Payment ecosystem | `/api/payments/initiate` simulates PG, PA, TPAP, PSP/bank, NPCI-style rail, webhook, refund, dispute, and settlement lifecycle. |
+## Concept flow
 
-## Payment Ecosystem Simulator
-
-This repository does not use live NPCI, bank, PSP, TPAP, payment aggregator, or payment gateway APIs. It implements a public-safe simulator for product architecture, AI decisioning, fraud/risk workflows, and enterprise SDLC demonstration.
-
-The simulator includes five adapters: NPCI-style UPI rail, TPAP, PSP/bank, payment aggregator, and payment gateway. It also includes HMAC webhook signatures, duplicate-event idempotency, out-of-order webhook handling, settlement batches, disputes, refunds, and a frontend **Payment Ecosystem Timeline** panel.
-
-See [`docs/PAYMENT_ECOSYSTEM_SIMULATOR.md`](docs/PAYMENT_ECOSYSTEM_SIMULATOR.md).
-
-## BFSI / Fintech Benefit
-
-BFSI and fintech teams can use this pattern to reduce failed payments, explain checkout failures, lower support volume, and dynamically recommend the best UPI path before a customer abandons payment.
-
-This project is useful for senior payment, fintech, digital banking, risk, platform, and AI product portfolios because it shows the full product chain: business concept, test data, secure APIs, RBAC, frontend workflows, explainability, model training, CI, documentation, and deployment thinking.
-
-## Architecture
-
-<p align="center">
-  <img src="docs/assets/system-map.svg" width="100%" alt="UPI FlowPilot architecture system map">
-</p>
-
-~~~mermaid
+```mermaid
 flowchart LR
-  UI["React RBAC Command Center"] --> AUTH["Signed Demo Token"]
-  AUTH --> API["Express API"]
-  API --> RBAC["RBAC + Zod + Helmet + Rate Limit"]
-  API --> CRUD["Synthetic CRUD Store"]
-  API --> AI["FlowPilot Decision Engine"]
-  API --> SIM["Payment Ecosystem Simulator"]
-  SIM --> PG["PG Checkout"]
-  SIM --> PA["Payment Aggregator + Webhooks"]
-  SIM --> TPAP["TPAP Customer App"]
-  SIM --> PSP["PSP / Bank Health"]
-  SIM --> RAIL["NPCI-style UPI Rail"]
-  RAIL --> RECON["Settlement / Refund / Dispute"]
-  RECON --> UI
-  AI --> UI
-~~~
-
-## AIML / DL Layer
-
-The repository includes working Python code in `ml/train_model.py`.
-
-It trains:
-
-- an explainable logistic-regression AIML baseline
-- a compact one-hidden-layer neural-network model as the DL demonstration
-- 10,000 synthetic rows with train/test split
-- holdout metrics, confusion matrix, feature importance, and model-card artifacts at `ml/model_card.json`, `ml/metrics.json`, and `ml/feature_importance.json`
-
-Run:
-
-```bash
-python ml/train_model.py
+  A[User checkout] --> B[UPI intent / collect / QR]
+  B --> C[Signal capture]
+  C --> D[PSP and issuer health inference]
+  D --> E[Retry / fallback / wait decision]
+  E --> F[Recovered payment or clean failure]
+  F --> G[Merchant reliability dashboard]
 ```
 
-Features used for this concept include `amount_paise`, `bank_success_rate`, `collect_decline_rate`, `risk_score`, `latency_ms`, `device_trust_score`, `merchant_trust_score`, and `retry_count`.
+## Investor-grade capability map
 
-## Mock UPI / NPCI API
+| Layer | Capability | Value |
+|---|---|---|
+| Market | UPI checkout reliability intelligence | Protects merchant conversion and GMV |
+| Product | Retry, wait and fallback decisioning | Reduces blind user retries |
+| AI/ML | Pattern detection from payment-event signals | Identifies degradation before manual escalation |
+| Platform | API-first merchant integration model | Fits PSP, gateway and merchant tech stacks |
+| Governance | Simulation-first, audit-safe design | Avoids production payment rail exposure |
 
-Example request:
+---
 
-```json
-{
-  "txnId": "TXN-DEMO-001",
-  "payerVpa": "payer@oksbi",
-  "payeeVpa": "merchant@upi",
-  "amount": 499,
-  "flow": "UPI_INTENT",
-  "purpose": "portfolio test flow",
-  "riskScore": 24,
-  "scenario": "HAPPY_PATH"
-}
-```
+## What visitors should understand in 60 seconds
 
-The response is intentionally NPCI-like for demos, but fully synthetic:
+- UPI reliability is a product problem, not only an infrastructure problem.
+- Merchants need flow intelligence, not only success/failure status.
+- Checkout recovery can become a measurable SaaS layer for digital commerce.
+- The product can work with mocked/synthetic UPI events before any regulated integration.
+- The proprietary value is in the reliability rules, scoring logic, event models and learning loop; these are intentionally not public.
 
-- `gateway: NPCI_UPI_MOCK`
-- `rrn`, `upiRequestId`, `bankRefId`
-- `npciStatus`, `responseCode`, `responseMessage`
-- settlement and pre-settlement hold metadata
-- risk decision and reason codes
-- synthetic PSP/bank webhook callback state
+## Success metrics
 
-## Run Locally
+| Metric | Why it matters |
+|---|---|
+| Checkout recovery rate | Direct merchant adoption signal |
+| Failed payment reduction | Reliability impact |
+| GMV protected | Commercial value |
+| Time to isolate degradation | SRE and operations value |
 
-```bash
-npm install
-npm run verify
-npm --workspace backend run start
-npm --workspace frontend run preview
-python ml/train_model.py
-```
+## Validation scenarios
 
-Frontend: `http://127.0.0.1:5101`
+- PSP timeout during high-volume sale
+- Issuer degradation during salary-credit window
+- Collect expiry and repeated user retry
+- QR mismatch at merchant counter
+- UPI intent handoff failure on device
+- Merchant abandonment after first failure
 
-Backend health: `http://127.0.0.1:4101/api/health`
+## Positioning
 
-## Documentation
+UPI FlowPilot sits at the intersection of payments reliability, merchant conversion, product observability and India-scale digital commerce.
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [API](docs/API.md)
-- [Diagrams](docs/DIAGRAMS.md)
-- [Security](docs/SECURITY.md)
-- [SDLC](docs/SDLC.md)
-- [Testing](docs/TESTING.md)
-- [Prototype Audit Response](docs/PROTOTYPE_AUDIT.md)
-
-## License and Proprietary Rights
-
-This repository is **public for portfolio review only**. It is **not open source**.
-
-Copyright (c) 2026 Prashant Jagtap. All Rights Reserved.
-
-No one may use, copy, modify, distribute, deploy, commercialize, train on, or create derivative works from this code, documentation, diagrams, synthetic data, logos, UI designs, concepts, or repository materials without prior written permission from Prashant Jagtap.
-
-See [LICENSE](LICENSE) and [NOTICE](NOTICE.md). Permission requests: <jprbom@gmail.com>.
-
-**Author:** Prashant Jagtap <jprbom@gmail.com>
+**Owner:** [Prashant Jagtap](https://github.com/jprbom)  
+**Repository type:** Public showcase, proprietary concept
