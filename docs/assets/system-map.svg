@@ -1,0 +1,25 @@
+<svg width="1120" height="310" viewBox="0 0 1120 310" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UPI FlowPilot system map">
+  <defs>
+    <linearGradient id="brand" x1="40" y1="0" x2="1080" y2="300"><stop stop-color="#f97316"/><stop offset=".55" stop-color="#06b6d4"/><stop offset="1" stop-color="#22c55e"/></linearGradient>
+    <style>
+      .canvas{fill:#f8fafc}.box{fill:#fff;stroke:url(#brand);stroke-width:2;filter:drop-shadow(0 12px 24px rgba(15,23,42,.12))}
+      .boxTitle{font:800 15px ui-sans-serif,Segoe UI,Arial;fill:#0f172a;text-anchor:middle}
+      .boxSub{font:600 12px ui-sans-serif,Segoe UI,Arial;fill:#64748b;text-anchor:middle}
+      .title{font:900 30px ui-sans-serif,Segoe UI,Arial;fill:#0f172a}
+      .flow{stroke:url(#brand);stroke-width:5;stroke-linecap:round;stroke-dasharray:10 10}
+    </style>
+  </defs>
+  <rect width="1120" height="310" rx="28" class="canvas"/>
+  <text x="55" y="62" class="title">System Flow: UPI FlowPilot</text>
+  <g><rect x="55" y="110" width="145" height="86" rx="18" class="box"/><text x="127" y="144" class="boxTitle">React RBAC UI</text><text x="127" y="168" class="boxSub">role-aware</text></g>
+<g><rect x="232" y="110" width="145" height="86" rx="18" class="box"/><text x="304" y="144" class="boxTitle">Express API</text><text x="304" y="168" class="boxSub">secure routes</text></g>
+<g><rect x="409" y="110" width="145" height="86" rx="18" class="box"/><text x="481" y="144" class="boxTitle">Zod validation</text><text x="481" y="168" class="boxSub">typed input</text></g>
+<g><rect x="586" y="110" width="145" height="86" rx="18" class="box"/><text x="658" y="144" class="boxTitle">Decision engine</text><text x="658" y="168" class="boxSub">Recommend best UPI rail</text></g>
+<g><rect x="763" y="110" width="145" height="86" rx="18" class="box"/><text x="835" y="144" class="boxTitle">JSON DB</text><text x="835" y="168" class="boxSub">synthetic</text></g>
+<g><rect x="940" y="110" width="145" height="86" rx="18" class="box"/><text x="1012" y="144" class="boxTitle">Reason codes</text><text x="1012" y="168" class="boxSub">explainable</text></g>
+  <path d="M200 153H232" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+<path d="M377 153H409" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+<path d="M554 153H586" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+<path d="M731 153H763" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+<path d="M908 153H940" class="flow"><animate attributeName="stroke-dashoffset" values="0;-32" dur="2.4s" repeatCount="indefinite"/></path>
+</svg>

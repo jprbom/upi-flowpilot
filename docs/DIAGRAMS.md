@@ -1,120 +1,90 @@
-# Diagrams
+# UPI FlowPilot Rich Diagrams
 
-## Architecture
+<p align="center">
+  <img src="assets/hero.svg" width="100%" alt="UPI FlowPilot hero diagram">
+</p>
+
+<p align="center">
+  <img src="assets/system-map.svg" width="100%" alt="UPI FlowPilot system map">
+</p>
+
+## Decision Journey
 
 ~~~mermaid
-flowchart LR
-  User["Role-aware dashboard user"] --> UI["React Vite frontend"]
-  UI --> API["Express API"]
-  API --> RBAC["RBAC middleware"]
-  API --> VALID["Zod validation"]
-  API --> ENGINE["Domain intelligence engine"]
-  API --> DB[("Synthetic JSON database")]
-  ENGINE --> EXPLAIN["Reason codes and explanation"]
-  EXPLAIN --> UI
-  classDef ui fill:#ecfeff,stroke:#0891b2,color:#083344
-  classDef api fill:#fff7ed,stroke:#f97316,color:#431407
-  classDef sec fill:#fee2e2,stroke:#dc2626,color:#450a0a
-  classDef data fill:#ecfdf5,stroke:#059669,color:#052e16
-  class UI ui
-  class API,ENGINE,EXPLAIN api
-  class RBAC,VALID sec
-  class DB data
+flowchart TD
+  A["Payment context"]:::start --> B["Success prediction"]:::signal
+  B --> C["Flow optimizer"]:::model
+  C --> D["Customer nudge"]:::decision
+  D --> E["Merchant action"]:::output
+  E --> F["Audit trail + dashboard update"]:::audit
+
+  classDef start fill:#ecfeff,stroke:#06b6d4,stroke-width:2px,color:#083344
+  classDef signal fill:#fef3c7,stroke:#22c55e,stroke-width:2px,color:#422006
+  classDef model fill:#eef2ff,stroke:#06b6d4,stroke-width:2px,color:#1e1b4b
+  classDef decision fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#431407
+  classDef output fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16
+  classDef audit fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a
 ~~~
 
 ## Data Flow Diagram
 
 ~~~mermaid
-flowchart TD
-  A["Synthetic input or CRUD form"] --> B["Request validation"]
-  B --> C{"Role has permission?"}
-  C -- No --> D["403 RBAC_DENIED"]
-  C -- Yes --> E["Route handler"]
-  E --> F[("JSON persistence")]
-  E --> G["Domain engine"]
-  G --> H["Reason codes"]
-  F --> I["Dashboard response"]
-  H --> I
-  classDef start fill:#e0f2fe,stroke:#0284c7,color:#082f49
-  classDef guard fill:#fef3c7,stroke:#d97706,color:#451a03
-  classDef stop fill:#fee2e2,stroke:#ef4444,color:#450a0a
-  classDef data fill:#dcfce7,stroke:#16a34a,color:#052e16
-  class A,I start
-  class B,C,E,G,H guard
-  class D stop
-  class F data
-~~~
-
-## Deployment
-
-~~~mermaid
 flowchart LR
-  Dev["Developer workstation"] --> Git["Private GitHub repo"]
-  Git --> CI["Build and test workflow"]
-  CI --> Image["Container image optional"]
-  Image --> Runtime["Node runtime"]
-  Runtime --> Backend["Backend on port 4101"]
-  Runtime --> Frontend["Static frontend preview on port 5101"]
-  Backend --> Store[("Mounted JSON DB")]
-  classDef repo fill:#ede9fe,stroke:#7c3aed,color:#2e1065
-  classDef build fill:#fef3c7,stroke:#ca8a04,color:#422006
-  classDef run fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-  classDef data fill:#dcfce7,stroke:#16a34a,color:#052e16
-  class Git repo
-  class CI,Image build
-  class Runtime,Backend,Frontend run
-  class Store data
+  User["Role-aware user"]:::user --> UI["React dashboard"]:::ui
+  UI --> API["Express API"]:::api
+  API --> Guard{"RBAC allowed?"}:::guard
+  Guard -- "No" --> Deny["403 RBAC_DENIED"]:::deny
+  Guard -- "Yes" --> Validate["Zod schema validation"]:::guard
+  Validate --> Store[("Payment Events / Routing Rules")]:::data
+  Validate --> Engine["Recommend best UPI rail"]:::model
+  Store --> Response["Dashboard JSON"]:::output
+  Engine --> Explain["Reason codes + narrative"]:::model
+  Explain --> Response
+
+  classDef user fill:#f8fafc,stroke:#475569,color:#0f172a
+  classDef ui fill:#ecfeff,stroke:#06b6d4,stroke-width:2px,color:#083344
+  classDef api fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#431407
+  classDef guard fill:#fef3c7,stroke:#22c55e,stroke-width:2px,color:#422006
+  classDef deny fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#450a0a
+  classDef data fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16
+  classDef model fill:#eef2ff,stroke:#06b6d4,stroke-width:2px,color:#1e1b4b
+  classDef output fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#052e16
 ~~~
 
-## Integration Flow
+## API Flow
 
 ~~~mermaid
 sequenceDiagram
   participant User as Dashboard User
   participant UI as React UI
   participant API as Express API
-  participant RBAC as RBAC
-  participant Engine as Domain Engine
+  participant RBAC as RBAC Gate
   participant DB as JSON DB
-  User->>UI: Select role and submit action
+  participant Engine as Decision Engine
+  User->>UI: Select role and run workflow
   UI->>API: Request with x-user-role
-  API->>RBAC: Check permission
+  API->>RBAC: Check read/write/admin permission
   RBAC-->>API: Allow or deny
-  API->>DB: Read or write synthetic record
-  API->>Engine: Compute recommendation or score
-  Engine-->>API: Reason codes and explanation
-  API-->>UI: JSON response
-  UI-->>User: Updated dashboard state
+  API->>DB: CRUD synthetic records
+  API->>Engine: Compute Recommend best UPI rail
+  Engine-->>API: Decision + reason codes
+  API-->>UI: Render updated command center
 ~~~
 
-## API Flow
+## Deployment View
 
 ~~~mermaid
-flowchart LR
-  H["GET /api/health"] --> Status["service and roles"]
-  M["GET /api/metrics"] --> KPI["dashboard KPIs"]
-  C["CRUD endpoints"] --> Persist["create/read/update/delete"]
-  D["Domain endpoint"] --> Score["recommendation or score"]
-  classDef route fill:#f0f9ff,stroke:#0284c7,color:#082f49
-  classDef result fill:#f7fee7,stroke:#65a30d,color:#1a2e05
-  class H,M,C,D route
-  class Status,KPI,Persist,Score result
-~~~
+flowchart TB
+  Repo["Private GitHub repo"]:::repo --> CI["npm run verify"]:::ci
+  CI --> Build["Backend dist + Frontend dist"]:::ci
+  Build --> Runtime["Node 22 runtime"]:::runtime
+  Runtime --> Backend["Express API :4101"]:::runtime
+  Runtime --> Frontend["Vite preview :5101"]:::runtime
+  Backend --> DB[("Mounted synthetic JSON DB")]:::data
 
-## RBAC
-
-~~~mermaid
-flowchart TD
-  Role["Selected role"] --> Read["read"]
-  Role --> Write{"write?"}
-  Role --> Admin{"admin?"}
-  Write --> Create["create and patch"]
-  Admin --> Delete["delete"]
-  classDef role fill:#eef2ff,stroke:#4f46e5,color:#1e1b4b
-  classDef ok fill:#dcfce7,stroke:#16a34a,color:#052e16
-  classDef danger fill:#fee2e2,stroke:#dc2626,color:#450a0a
-  class Role role
-  class Read,Create ok
-  class Delete danger
+  classDef repo fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#2e1065
+  classDef ci fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#422006
+  classDef runtime fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a
+  classDef data fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#052e16
 ~~~
 

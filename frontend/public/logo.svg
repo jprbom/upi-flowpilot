@@ -1,7 +1,32 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" rx="56" fill="#111827"/>
-  <path d="M128 28L206 72V132C206 178 173 220 128 232C83 220 50 178 50 132V72L128 28Z" fill="#f97316" fill-opacity="0.18"/>
-  <path d="M128 42L190 77V130C190 167 164 201 128 212C92 201 66 167 66 130V77L128 42Z" stroke="#f97316" stroke-width="12" stroke-linejoin="round"/>
-  <path d="M88 129H168M128 89V169M104 105L152 153M152 105L104 153" stroke="#06b6d4" stroke-width="12" stroke-linecap="round"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UPI FlowPilot animated logo">
+  <defs>
+    <linearGradient id="brand" x1="34" y1="32" x2="222" y2="222" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f97316">
+        <animate attributeName="stop-color" values="#f97316;#06b6d4;#f97316" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="55%" stop-color="#06b6d4">
+        <animate attributeName="stop-color" values="#06b6d4;#22c55e;#06b6d4" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.2 0 0 0 0 0.7 0 0 0 0 1 0 0 0 .45 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .bg{fill:#111827}
+      .ring{stroke:url(#brand);stroke-width:12;stroke-linecap:round;filter:url(#glow);stroke-dasharray:520;animation:dash 7s ease-in-out infinite}
+      .line{stroke:url(#brand);stroke-width:10;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow)}
+      .thin{stroke-width:7}
+      .ghost{stroke:#22c55e;stroke-opacity:.42;stroke-width:8}
+      .node{fill:#06b6d4;filter:url(#glow);animation:pulse 2.8s ease-in-out infinite}
+      .hot{fill:#22c55e;animation:pulse 2.1s ease-in-out infinite}
+      @keyframes dash{0%,100%{stroke-dashoffset:0}50%{stroke-dashoffset:120}}
+      @keyframes pulse{0%,100%{opacity:.72;transform:scale(.96);transform-origin:128px 128px}50%{opacity:1;transform:scale(1.08);transform-origin:128px 128px}}
+    </style>
+  </defs>
+  <rect width="256" height="256" rx="54" class="bg"/>
+  <path d="M128 30c54 0 98 44 98 98s-44 98-98 98-98-44-98-98 44-98 98-98z" class="ring"/>
+  <path d="M76 132c30-54 72-54 102 0M86 166c28-28 62-28 88 0" class="line"/><circle cx="78" cy="132" r="11" class="node"/><circle cx="178" cy="132" r="11" class="node hot"/><path d="M128 86v84" class="line thin"/>
 </svg>
-
