@@ -11,11 +11,11 @@
 <p align="center"><strong>Real-time UPI checkout reliability, flow selection, retry, and degradation intelligence for Bharat merchants.</strong></p>
 
 <p align="center">
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-19-149eca?style=for-the-badge&logo=react&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5-111827?style=for-the-badge&logo=express&logoColor=white)
-![Security](https://img.shields.io/badge/Audit-0%20High%20Vulns-16a34a?style=for-the-badge&logo=securityscorecard&logoColor=white)
-![Synthetic](https://img.shields.io/badge/Data-Synthetic%20Only-f97316?style=for-the-badge)
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-19-149eca?style=for-the-badge&logo=react&logoColor=white">
+  <img alt="Express" src="https://img.shields.io/badge/Express-5-111827?style=for-the-badge&logo=express&logoColor=white">
+  <img alt="Security" src="https://img.shields.io/badge/Audit-0%20High%20Vulns-16a34a?style=for-the-badge&logo=securityscorecard&logoColor=white">
+  <img alt="Synthetic" src="https://img.shields.io/badge/Data-Synthetic%20Only-f97316?style=for-the-badge">
 </p>
 
 <p align="center">
