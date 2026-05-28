@@ -68,7 +68,8 @@ page.on('console', (message) => {
 page.on('pageerror', (error) => consoleIssues.push(`pageerror: ${error.message}`));
 
 try {
-  await page.goto(frontendUrl, { waitUntil: 'networkidle' });
+  await page.goto(frontendUrl, { waitUntil: 'domcontentloaded' });
+  await page.locator('h1').waitFor({ timeout: 10000 });
 
   const title = await page.title();
   const h1 = await page.locator('h1').innerText();
@@ -80,7 +81,9 @@ try {
   assert(navCount >= 4, 'Expected sidebar tabs to render.');
   for (let index = 0; index < navCount; index += 1) {
     const tab = navItems.nth(index);
-    await tab.click();
+    if (await tab.getAttribute('aria-pressed') !== 'true') {
+      await tab.click({ force: true });
+    }
     await page.waitForFunction((tabIndex) => {
       return document.querySelectorAll('.nav-item')[tabIndex]?.getAttribute('aria-pressed') === 'true';
     }, index, { timeout: 10000 });
@@ -101,22 +104,25 @@ try {
   await clickAction(page, 2, 'mock UPI');
   await page.locator('.mock-card').filter({ hasText: 'RRN:' }).waitFor({ timeout: 10000 });
 
-  await clickAction(page, 3, 'create');
+  await clickAction(page, 3, 'payment ecosystem');
+  await page.locator('.payment-timeline').filter({ hasText: 'Settlement' }).waitFor({ timeout: 10000 });
+
+  await clickAction(page, 4, 'create');
   await waitForNotice(page, 'Created test record');
-  await clickAction(page, 4, 'patch');
+  await clickAction(page, 5, 'patch');
   await waitForNotice(page, 'Patched drill-down record');
-  await clickAction(page, 5, 'delete');
+  await clickAction(page, 6, 'delete');
   await waitForNotice(page, 'Deleted');
 
   await page.getByLabel('RBAC role').selectOption('VIEWER');
   await waitForNotice(page, 'Loaded live synthetic API data');
-  await clickAction(page, 3, 'viewer create denial');
+  await clickAction(page, 4, 'viewer create denial');
   await waitForNotice(page, 'Create failed');
-  await clickAction(page, 5, 'viewer delete denial');
+  await clickAction(page, 6, 'viewer delete denial');
   await waitForNotice(page, 'Delete failed');
 
   await page.setViewportSize({ width: 390, height: 860 });
-  await page.reload({ waitUntil: 'networkidle' });
+  await page.reload({ waitUntil: 'domcontentloaded' });
   assert(await page.locator('h1').isVisible(), 'Mobile viewport did not render the app heading.');
 
   assert(consoleIssues.length === 0, `Console issues detected: ${consoleIssues.join('; ')}`);
@@ -132,6 +138,7 @@ try {
       sidebarTabs: navCount,
       domainDecision: true,
       mockUpi: true,
+      paymentEcosystem: true,
       crud: true,
       viewerRbacDenial: true,
       mobileSmoke: true,

@@ -1,0 +1,10 @@
+{
+  "risk_score": 3.82817,
+  "latency_ms": 3.12395,
+  "bank_success_rate": 1.6333,
+  "collect_decline_rate": 1.51926,
+  "retry_count": 1.23241,
+  "merchant_trust_score": 1.15127,
+  "device_trust_score": 0.97434,
+  "amount_paise": 0.00058
+}

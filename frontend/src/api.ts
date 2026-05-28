@@ -10,12 +10,31 @@ function apiBaseUrl() {
   return '';
 }
 
+const tokenCache = new Map<string, string>();
+
+async function demoTokenForRole(role: string) {
+  const cached = tokenCache.get(role);
+  if (cached) return cached;
+  const response = await fetch(apiBaseUrl() + '/api/auth/demo-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ role, tenantId: 'tenant_demo_bfsi' })
+  });
+  if (!response.ok) {
+    throw new Error('Demo auth token request failed with status ' + response.status);
+  }
+  const body = await response.json() as { token: string };
+  tokenCache.set(role, body.token);
+  return body.token;
+}
+
 export async function apiRequest<T>(path: string, role: string, options: RequestInit = {}): Promise<T> {
+  const token = await demoTokenForRole(role);
   const response = await fetch(apiBaseUrl() + '/api' + path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'x-user-role': role,
+      Authorization: 'Bearer ' + token,
       ...(options.headers || {})
     }
   });

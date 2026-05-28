@@ -45,11 +45,20 @@ The frontend now has working tabs, CTAs, row drill-downs, create/patch/delete CR
 
 | Flow | What works |
 | --- | --- |
-| RBAC | Role selector sends `x-user-role` to the backend. Admin can perform destructive operations. |
+| RBAC | Role selector requests a signed local demo bearer token. Forged `x-user-role` headers are ignored. |
 | Tabs | Every sidebar tab changes active content and drill-down context. |
 | CRUD | The primary workspace can create, patch, inspect, and delete synthetic records. |
 | AI decision | `/recommendations` returns explainable reason codes. |
 | Mock UPI | `/api/mock-upi` returns RRN, UPI request id, bank reference, response code, settlement state, and webhook metadata. |
+| Payment ecosystem | `/api/payments/initiate` simulates PG, PA, TPAP, PSP/bank, NPCI-style rail, webhook, refund, dispute, and settlement lifecycle. |
+
+## Payment Ecosystem Simulator
+
+This repository does not use live NPCI, bank, PSP, TPAP, payment aggregator, or payment gateway APIs. It implements a public-safe simulator for product architecture, AI decisioning, fraud/risk workflows, and enterprise SDLC demonstration.
+
+The simulator includes five adapters: NPCI-style UPI rail, TPAP, PSP/bank, payment aggregator, and payment gateway. It also includes HMAC webhook signatures, duplicate-event idempotency, out-of-order webhook handling, settlement batches, disputes, refunds, and a frontend **Payment Ecosystem Timeline** panel.
+
+See [`docs/PAYMENT_ECOSYSTEM_SIMULATOR.md`](docs/PAYMENT_ECOSYSTEM_SIMULATOR.md).
 
 ## BFSI / Fintech Benefit
 

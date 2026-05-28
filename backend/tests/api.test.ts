@@ -1,14 +1,19 @@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
+import { signDemoToken, type Role } from '../src/auth.js';
 import { createTestDatabase } from '../src/db.js';
+
+function bearer(role: Role) {
+  return 'Bearer ' + signDemoToken(role);
+}
 
 describe('UPI FlowPilot API', () => {
   it('recommends UPI Lite for low-value degraded collect context', async () => {
     const app = createApp(createTestDatabase());
     const response = await request(app)
       .post('/api/recommendations')
-      .set('x-user-role', 'OPS_MANAGER')
+      .set('Authorization', bearer('OPS_MANAGER'))
       .send({
         amount: 240,
         payerBank: 'SBI',
@@ -26,6 +31,13 @@ describe('UPI FlowPilot API', () => {
 
   it('supports payment event CRUD with RBAC boundaries', async () => {
     const app = createApp(createTestDatabase());
+    const forgedAdmin = await request(app)
+      .delete('/api/payment-events/pay_forged_header')
+      .set('x-user-role', 'ADMIN');
+
+    expect(forgedAdmin.status).toBe(403);
+    expect(forgedAdmin.body.error).toBe('RBAC_DENIED');
+
     const forgedRole = await request(app)
       .post('/api/payment-events')
       .set('x-user-role', 'UNKNOWN_ADMIN')
@@ -45,7 +57,7 @@ describe('UPI FlowPilot API', () => {
 
     const created = await request(app)
       .post('/api/payment-events')
-      .set('x-user-role', 'OPS_MANAGER')
+      .set('Authorization', bearer('OPS_MANAGER'))
       .send({
         merchantId: 'test-merchant',
         amount: 999,
@@ -62,12 +74,12 @@ describe('UPI FlowPilot API', () => {
 
     const denied = await request(app)
       .delete('/api/payment-events/' + created.body.id)
-      .set('x-user-role', 'OPS_MANAGER');
+      .set('Authorization', bearer('OPS_MANAGER'));
     expect(denied.status).toBe(403);
 
     const deleted = await request(app)
       .delete('/api/payment-events/' + created.body.id)
-      .set('x-user-role', 'ADMIN');
+      .set('Authorization', bearer('ADMIN'));
     expect(deleted.status).toBe(204);
   });
 
@@ -75,7 +87,7 @@ describe('UPI FlowPilot API', () => {
     const app = createApp(createTestDatabase());
     const response = await request(app)
       .post('/api/mock-upi')
-      .set('x-user-role', 'OPS_MANAGER')
+      .set('Authorization', bearer('OPS_MANAGER'))
       .send({
         txnId: 'TXN-DEMO-001',
         payerVpa: 'payer@oksbi',
