@@ -33,6 +33,12 @@ UPI FlowPilot is a full-stack UPI-native AI infrastructure prototype. It combine
 
 The system uses synthetic data to show how a BFSI or fintech product team could operate real-time upi checkout reliability and payment-flow recovery engine. without touching real customer, bank, PSP, NPCI, or UPI rail data.
 
+## Prototype Positioning
+
+This repo is intentionally positioned as a **runnable synthetic prototype**, not a production fintech system. The frontend, APIs, CRUD, RBAC workflow, mock UPI response, tests, Docker files, and documentation are real. The payment rail, security authority, persistence, and AIML/DL models are controlled demo layers.
+
+Use the phrasing: "UPI-native AI product prototype with SDLC packaging." Avoid the phrasing: "production-ready UPI payment platform."
+
 ## Working Demo
 
 The frontend now has working tabs, CTAs, row drill-downs, create/patch/delete CRUD actions, domain-specific AI decision calls, and a mock UPI/NPCI request-response flow.
@@ -134,6 +140,7 @@ Backend health: `http://127.0.0.1:4101/api/health`
 - [Security](docs/SECURITY.md)
 - [SDLC](docs/SDLC.md)
 - [Testing](docs/TESTING.md)
+- [Prototype Audit Response](docs/PROTOTYPE_AUDIT.md)
 
 ## License and Proprietary Rights
 

@@ -15,12 +15,14 @@
     "build": "npm --workspace backend run build && npm --workspace frontend run build",
     "test": "npm --workspace backend run test && npm --workspace frontend run test",
     "audit:high": "npm audit --audit-level=high",
-    "verify": "npm run build && npm run test && npm run audit:high"
+    "verify": "npm run build && npm run test && npm run audit:high",
+    "test:e2e:local": "node scripts/e2e-smoke.mjs"
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "devDependencies": {
+    "playwright-core": "^1.53.2",
     "vite": "^6.4.2"
   },
   "repository": {

@@ -26,6 +26,23 @@ describe('UPI FlowPilot API', () => {
 
   it('supports payment event CRUD with RBAC boundaries', async () => {
     const app = createApp(createTestDatabase());
+    const forgedRole = await request(app)
+      .post('/api/payment-events')
+      .set('x-user-role', 'UNKNOWN_ADMIN')
+      .send({
+        merchantId: 'forged-role-test',
+        amount: 500,
+        payerBank: 'SBI',
+        psp: 'GPay',
+        flow: 'UPI_INTENT',
+        status: 'PENDING',
+        latencyMs: 900,
+        riskScore: 10
+      });
+
+    expect(forgedRole.status).toBe(403);
+    expect(forgedRole.body.role).toBe('VIEWER');
+
     const created = await request(app)
       .post('/api/payment-events')
       .set('x-user-role', 'OPS_MANAGER')
