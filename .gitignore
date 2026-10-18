@@ -10,3 +10,9 @@ frontend/vite.config.js
 frontend/vite.config.d.ts
 frontend/tsconfig.node.tsbuildinfo
 backend/data/app-db.json
+
+# Release receipts and source transport are local, not versioned.
+.release-local/
+.release-evidence/
+.release/source.pack
+.release/source-commit.txt

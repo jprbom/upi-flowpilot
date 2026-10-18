@@ -1,0 +1,16 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  install:
+    commands:
+      - python3 -m pip install --quiet PyYAML==6.0.3
+      - bash .release/install-act.sh
+  build:
+    commands:
+      - mkdir -p .release-evidence
+      - set -o pipefail; python3 -m unittest discover -s .release -p 'test*.py' -v 2>&1 | tee .release-evidence/unit-tests.log
+      - python3 .release/smoke.py
+artifacts:
+  files:
+    - '.release-evidence/**/*'
