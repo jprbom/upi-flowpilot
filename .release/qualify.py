@@ -30,7 +30,9 @@ def serial_jobs(workflow):
         else:
             condition=str(condition).strip()
             if condition.startswith('${{') and condition.endswith('}}'):condition=condition[3:-2].strip()
-        job['if']='always() && ('+condition+')'
+        # Stop dependent service startup after a failure; missing markers still fail qualification.
+        previous=("needs['"+order[index-1]+"'].result == 'success' && " if index else '')
+        job['if']='always() && '+previous+'('+condition+')'
         job['needs']=list(dict.fromkeys(needs+([order[index-1]] if index else [])))
     return workflow
 

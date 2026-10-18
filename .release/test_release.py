@@ -66,6 +66,7 @@ class ReleaseTests(unittest.TestCase):
         result=qualify.translate(original)
         self.assertIn('independent',result['jobs']['producer']['needs'])
         self.assertEqual(result['jobs']['consumer']['needs'],['producer'])
+        self.assertIn("needs['producer'].result == 'success'",result['jobs']['consumer']['if'])
         self.assertIn('needs.producer.outputs.ready',result['jobs']['consumer']['if'])
         self.assertEqual(result['jobs']['independent']['if'],'always() && (true)')
 
