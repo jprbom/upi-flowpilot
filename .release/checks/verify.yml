@@ -1,0 +1,45 @@
+name: verify
+true:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - run: npm ci
+    - run: npm run verify
+    - uses: browser-actions/setup-chrome@v1
+      id: setup-chrome
+    - name: Start local preview stack
+      shell: bash
+      run: "npm --workspace backend run start > backend.log 2>&1 &\nnpm --workspace\
+        \ frontend run preview -- --host 127.0.0.1 > frontend.log 2>&1 &\nfor i in\
+        \ {1..45}; do\n  if curl -fsS http://127.0.0.1:4101/api/health >/dev/null\
+        \ && curl -fsS http://127.0.0.1:5101 >/dev/null; then\n    exit 0\n  fi\n\
+        \  sleep 2\ndone\ncat backend.log || true\ncat frontend.log || true\nexit\
+        \ 1\n"
+    - name: Browser E2E smoke
+      env:
+        CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+      run: npm run test:e2e:local
+    - name: Upload evidence artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-evidence
+        path: 'artifacts/
+
+          backend.log
+
+          frontend.log
+
+          '

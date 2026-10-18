@@ -1,0 +1,2 @@
+# The release runner executes on Linux even when prepared from Windows.
+* text eol=lf

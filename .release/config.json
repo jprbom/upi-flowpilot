@@ -1,0 +1,16 @@
+{
+  "repository": "jprbom/upi-flowpilot",
+  "branch": "main",
+  "region": "ap-south-1",
+  "account": "339712791790",
+  "bucket": "jprbom-release-artifacts-339712791790-ap-south-1",
+  "project": "release-upi-flowpilot",
+  "runner_image": "ghcr.io/catthehacker/ubuntu@sha256:62d572b92f9f32d3427b6d220ad1f9dca9c7b6ffad37d295425037dbff78abaf",
+  "checks": [
+    ".release/checks/verify.yml"
+  ],
+  "deferred_checks": [],
+  "deployment": {
+    "adapter": "artifact-only"
+  }
+}
