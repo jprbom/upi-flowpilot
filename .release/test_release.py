@@ -58,6 +58,17 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn('uses', original['jobs']['tests']['steps'][0])
         self.assertNotIn('uses', result['jobs']['tests']['steps'][0])
 
+    def test_service_lifecycle_is_serialized_without_dropping_needs_outputs(self):
+        original={'jobs':{
+            'consumer':{'runs-on':'ubuntu-latest','needs':'producer','if':"needs.producer.outputs.ready == 'true'",'steps':[{'run':'consumer'}]},
+            'independent':{'runs-on':'ubuntu-latest','steps':[{'run':'other'}]},
+            'producer':{'runs-on':'ubuntu-latest','steps':[{'run':'producer'}]}}}
+        result=qualify.translate(original)
+        self.assertIn('independent',result['jobs']['producer']['needs'])
+        self.assertEqual(result['jobs']['consumer']['needs'],['producer'])
+        self.assertIn('needs.producer.outputs.ready',result['jobs']['consumer']['if'])
+        self.assertEqual(result['jobs']['independent']['if'],'always() && (true)')
+
     def test_credentials_and_native_jobs_fail_closed(self):
         for workflow in [
             {'jobs': {}},

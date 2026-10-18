@@ -14,6 +14,27 @@ import yaml
 ROOT = Path.cwd()
 
 
+def serial_jobs(workflow):
+    jobs=workflow['jobs'];order=[];pending=list(jobs)
+    original={key:([job['needs']] if isinstance(job.get('needs'),str) else list(job.get('needs',[])))
+              for key,job in jobs.items()}
+    while pending:
+        ready=[key for key in pending if all(dep in order for dep in original[key])]
+        if not ready:raise ValueError('Invalid/missing job dependency graph')
+        for key in ready:order.append(key);pending.remove(key)
+    for index,key in enumerate(order):
+        job=jobs[key];needs=original[key]
+        condition=job.get('if')
+        if condition is None:
+            condition=' && '.join("needs['"+dep+"'].result == 'success'" for dep in needs) or 'true'
+        else:
+            condition=str(condition).strip()
+            if condition.startswith('${{') and condition.endswith('}}'):condition=condition[3:-2].strip()
+        job['if']='always() && ('+condition+')'
+        job['needs']=list(dict.fromkeys(needs+([order[index-1]] if index else [])))
+    return workflow
+
+
 def translate(workflow, workflow_id='checks'):
     """Keep tests/services/matrices/conditions; replace only GitHub transport."""
     result = copy.deepcopy(workflow)
@@ -34,6 +55,14 @@ def translate(workflow, workflow_id='checks'):
                 step.pop('uses')
                 step.pop('with', None)
                 step['run'] = 'test "$(git rev-parse HEAD)" = "$RELEASE_COMMIT" && git diff --quiet HEAD --'
+            elif action == 'ocaml/setup-ocaml':
+                inputs=step.pop('with',{})
+                compiler=str(inputs.get('ocaml-compiler',''))
+                if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',compiler):
+                    raise ValueError('OCaml bootstrap needs an exact compiler version')
+                step.pop('uses')
+                step.setdefault('env',{})['RELEASE_OCAML_COMPILER']=compiler
+                step['run']='bash "$GITHUB_WORKSPACE/.release/setup-ocaml.sh"'
             elif action in ('actions/upload-artifact', 'actions/cache',
                             'actions/download-artifact'):
                 if action == 'actions/download-artifact':
@@ -61,6 +90,13 @@ def translate(workflow, workflow_id='checks'):
                     step['run'] = 'cd "$GITHUB_WORKSPACE" && python3 .release/collect-evidence.py'
                 else:
                     step['run'] = 'echo "GitHub cache transport disabled; release checks are unchanged."'
+        isolated=[]
+        for step in job['steps']:
+            isolated.append(step)
+            if step.get('uses','').split('@')[0]=='actions/setup-python':
+                isolated.append({'name':'Isolate this job Python dependencies',
+                    'run':'python -m venv "$RUNNER_TEMP/release-python" && echo "$RUNNER_TEMP/release-python/bin" >> "$GITHUB_PATH"'})
+        job['steps']=isolated
         job.setdefault('steps', []).append({
             'name': 'Record release job result', 'if': 'always()',
             'env': {'RELEASE_WORKFLOW_ID': workflow_id, 'RELEASE_JOB_ID': job_id,
@@ -69,7 +105,7 @@ def translate(workflow, workflow_id='checks'):
     text = yaml.safe_dump(result, sort_keys=False)
     if re.search(r'\bsecrets\.', text) or 'id-token: write' in text or 'packages: write' in text:
         raise ValueError('Credentialed/publishing workflow requires a dedicated adapter')
-    return result
+    return serial_jobs(result)
 
 
 def main(smoke=False):
@@ -91,6 +127,8 @@ def main(smoke=False):
     config = json.loads((ROOT / '.release/config.json').read_text())
     if smoke:
         config['checks']=['.release/smoke-workflow.yml']
+    subprocess.run(['git','symbolic-ref','HEAD','refs/heads/'+config['branch']],check=True)
+    subprocess.run(['git','update-ref','HEAD',sha],check=True)
     subprocess.run(['git', 'remote', 'add', 'origin', 'https://github.com/' + config['repository']], check=True)
     evidence = ROOT / '.release-evidence'
     evidence.mkdir(exist_ok=True)
@@ -121,9 +159,23 @@ def main(smoke=False):
                        '--eventpath', str(event), '-W', str(generated / Path(filename).name)]
             # Explicit pull before act: no interactive image selection or silent image replacement.
             subprocess.run(['docker', 'pull', config['runner_image']], check=True)
-            with log.open('w') as output:
-                outcome = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
             workflow = yaml.safe_load((ROOT / filename).read_text())
+            containers=set(subprocess.check_output(['docker','ps','-aq'],text=True).split())
+            volumes=set(subprocess.check_output(['docker','volume','ls','-q'],text=True).split())
+            # Dependencies added during translation serialize lifecycle stages,
+            # including service initialization, not merely test execution.
+            with log.open('w') as output:
+                process=subprocess.Popen(command,stdout=subprocess.PIPE,
+                                         stderr=subprocess.STDOUT,text=True,errors='replace')
+                for line in process.stdout:
+                    output.write(line);output.flush();print(line,end='',flush=True)
+                exit_code=process.wait()
+            # Remove only this completed workflow's newly created resources on
+            # its private ephemeral CodeBuild daemon. Never a local app daemon.
+            created=set(subprocess.check_output(['docker','ps','-aq'],text=True).split())-containers
+            for container in created:subprocess.run(['docker','rm','-f',container],check=True)
+            created_volumes=set(subprocess.check_output(['docker','volume','ls','-q'],text=True).split())-volumes
+            for volume in created_volumes:subprocess.run(['docker','volume','rm',volume],check=True)
             job_results = []
             for path in (evidence / 'job-results' / Path(filename).stem).glob('*.json'):
                 job_results.append(json.loads(path.read_text()))
@@ -131,7 +183,7 @@ def main(smoke=False):
             missing = set(workflow['jobs']) - executed
             if missing:
                 print('Missing successful job execution evidence:', sorted(missing), file=sys.stderr)
-            returncode = outcome.returncode or (1 if missing else 0)
+            returncode = exit_code or (1 if missing else 0)
             clean = subprocess.run(['git','diff','--quiet','HEAD','--']).returncode == 0
             if not clean:
                 print('Tracked source changed during release checks; qualification rejected', file=sys.stderr)
