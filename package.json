@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "playwright-core": "^1.53.2",
-    "vite": "^6.4.2"
+    "vite": "^8.3.8"
   },
   "repository": {
     "type": "git",
